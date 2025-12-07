@@ -1,0 +1,31 @@
+# PlatformIO build files
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+*.o
+*.a
+*.elf
+*.bin
+*.map
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Credentials (never commit)
+credentials.h
+secrets.h
+*.pem
+*.key
