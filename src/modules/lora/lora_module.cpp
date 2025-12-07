@@ -8,6 +8,10 @@
 #include "../../ui/ui_manager.h"
 #include <SPI.h>
 
+#if ENABLE_GPS
+#include "../gps/gps_module.h"
+#endif
+
 // Static member initialization
 SX1262* LoRaModule::radio = nullptr;
 bool LoRaModule::initialized = false;
@@ -1012,6 +1016,14 @@ void LoRaModule::buildMenu(void* menuPtr) {
         UIManager::showMessage("Meshtastic", "Joined default channel");
     }));
 
+    meshNodeMenu->addItem(MenuItem("Send Message", []() {
+        String msg = UIManager::showTextInput("Enter message:", "");
+        if (msg.length() > 0) {
+            LoRaModule::sendMeshtasticText(msg);
+            UIManager::showMessage("Meshtastic", "Message sent!");
+        }
+    }));
+
     meshNodeMenu->addItem(MenuItem("Send Hello", []() {
         LoRaModule::sendMeshtasticText("Hello from ShitBird!");
         UIManager::showMessage("Meshtastic", "Sent hello message");
@@ -1020,6 +1032,23 @@ void LoRaModule::buildMenu(void* menuPtr) {
     meshNodeMenu->addItem(MenuItem("Send Node Info", []() {
         LoRaModule::sendMeshtasticNodeInfo();
         UIManager::showMessage("Meshtastic", "Node info broadcast");
+    }));
+
+    meshNodeMenu->addItem(MenuItem("Send GPS Position", []() {
+        #if ENABLE_GPS
+        if (GPSModule::hasFix()) {
+            LoRaModule::sendMeshtasticPosition(
+                GPSModule::getLatitude(),
+                GPSModule::getLongitude(),
+                (int32_t)GPSModule::getAltitude()
+            );
+            UIManager::showMessage("Meshtastic", "Position sent!");
+        } else {
+            UIManager::showMessage("Meshtastic", "No GPS fix");
+        }
+        #else
+        UIManager::showMessage("Meshtastic", "GPS disabled");
+        #endif
     }));
 
     meshNodeMenu->addItem(MenuItem("Start Listening", []() {

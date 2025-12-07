@@ -107,10 +107,10 @@
 #define ENABLE_WIFI         1
 #define ENABLE_BLE          1
 #define ENABLE_LORA         1
-#define ENABLE_GPS          0
+#define ENABLE_GPS          1
 #define ENABLE_IR           0
 #define ENABLE_BADUSB       0
-#define ENABLE_SD           0
+#define ENABLE_SD           1
 #define ENABLE_AUDIO        0
 #define ENABLE_OTA          0
 #define ENABLE_WEB_SERVER   0

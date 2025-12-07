@@ -21,6 +21,10 @@
 #include "../modules/lora/lora_module.h"
 #endif
 
+#if ENABLE_GPS
+#include "../modules/gps/gps_module.h"
+#endif
+
 // Static member initialization
 MenuScreen* UIManager::currentScreen = nullptr;
 MenuScreen* UIManager::mainMenu = nullptr;
@@ -624,6 +628,13 @@ void UIManager::buildMainMenu() {
     LoRaModule::buildMenu(loraMenu);
 #endif
     mainMenu->addItem(MenuItem("LoRa Tools", loraMenu));
+
+    // GPS Menu
+    static MenuScreen* gpsMenu = new MenuScreen("GPS", mainMenu);
+#if ENABLE_GPS
+    GPSModule::buildMenu(gpsMenu);
+#endif
+    mainMenu->addItem(MenuItem("GPS", gpsMenu));
 
     // BadUSB Menu
     static MenuScreen* badUSBMenu = new MenuScreen("BadUSB", mainMenu);

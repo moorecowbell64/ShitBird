@@ -28,6 +28,10 @@
 #include "modules/lora/lora_module.h"
 #endif
 
+#if ENABLE_GPS
+#include "modules/gps/gps_module.h"
+#endif
+
 #if ENABLE_IR
 #include "modules/ir/ir_module.h"
 #endif
@@ -67,10 +71,6 @@ void setup() {
     // Show splash screen
     Splash::show();
 
-    // Skip storage init for now - may hang if no SD card
-    // Serial.println("[BOOT] Initializing storage...");
-    // Storage::init();
-
     // Skip settings load - use defaults from constructor
     // Serial.println("[BOOT] Loading settings...");
     // g_systemState.loadSettings();
@@ -96,6 +96,17 @@ void setup() {
     #if ENABLE_LORA
     Serial.println("[BOOT] Initializing LoRa module...");
     LoRaModule::init();
+    #endif
+
+    // SD card init after LoRa (SPI must be initialized first)
+    #if ENABLE_SD
+    Serial.println("[BOOT] Initializing storage...");
+    Storage::init();
+    #endif
+
+    #if ENABLE_GPS
+    Serial.println("[BOOT] Initializing GPS module...");
+    GPSModule::init();
     #endif
 
     #if ENABLE_IR
@@ -125,6 +136,11 @@ void setup() {
 void loop() {
     // Update keyboard input
     Keyboard::update();
+
+    // Update GPS
+    #if ENABLE_GPS
+    GPSModule::update();
+    #endif
 
     // Update UI
     UIManager::update();

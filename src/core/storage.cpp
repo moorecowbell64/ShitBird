@@ -13,12 +13,13 @@ SPIClass* Storage::spi = nullptr;
 bool Storage::init() {
     Serial.println("[STORAGE] Initializing SD card...");
 
-    // Use HSPI for SD card (shared with display and LoRa)
-    spi = new SPIClass(HSPI);
-    spi->begin(SD_SCLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+    // Ensure SD card chip select is HIGH
+    pinMode(SD_CS_PIN, OUTPUT);
+    digitalWrite(SD_CS_PIN, HIGH);
 
-    // Initialize SD card
-    if (!SD.begin(SD_CS_PIN, *spi, 25000000)) {
+    // Use default SPI (shared bus with TFT and LoRa - already initialized)
+    // Initialize SD card using default SPI
+    if (!SD.begin(SD_CS_PIN, SPI, 25000000)) {
         Serial.println("[STORAGE] SD card mount failed!");
         mounted = false;
         g_systemState.sdMounted = false;
@@ -64,11 +65,7 @@ void Storage::deinit() {
         mounted = false;
         g_systemState.sdMounted = false;
     }
-    if (spi) {
-        spi->end();
-        delete spi;
-        spi = nullptr;
-    }
+    // Note: We don't end/delete SPI since it's the shared default SPI bus
 }
 
 bool Storage::isMounted() {
